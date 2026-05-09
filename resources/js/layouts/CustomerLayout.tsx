@@ -1,13 +1,14 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
-import { 
-    ShoppingCart, Search, User, Menu, Heart, Phone, MapPin, ChevronDown, 
-    X, Grid, Percent 
+import {
+    ShoppingCart, Search, User, Menu, Heart, Phone, MapPin, ChevronDown,
+    X, Grid, Percent
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
-    const { auth } = usePage().props as any;
+    const page = usePage();
+    const { auth } = page.props as any;
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -41,10 +42,10 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <header className={`bg-white transition-all duration-300 z-50 sticky top-0 ${isScrolled ? 'shadow-md py-3' : 'py-4 border-b border-gray-200'}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between gap-4 lg:gap-8">
-                        
+
                         {/* Mobile Menu Button & Logo */}
                         <div className="flex items-center gap-4">
-                            <button 
+                            <button
                                 className="lg:hidden text-gray-700 hover:text-green-600"
                                 onClick={() => setMobileMenuOpen(true)}
                             >
@@ -97,27 +98,28 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                     </Link>
                                 )}
                             </div>
-                            
-                            <Link href="#" className="hidden sm:flex text-gray-700 hover:text-red-500 transition-colors relative p-2 rounded-md hover:bg-gray-50 border border-transparent hover:border-gray-200">
-                                <Heart className="h-6 w-6" strokeWidth={1.5} />
-                                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-                            </Link>
 
-                            <Link href={route('cart.index')} className="flex items-center gap-3 bg-gray-50 border border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-900 px-4 py-2 rounded-md transition-all">
-                                <div className="relative text-green-700">
-                                    <ShoppingCart className="h-6 w-6" strokeWidth={2} />
-                                    <span className="absolute -top-2 -right-2 h-5 w-5 bg-green-600 text-white text-[11px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-                                        3
-                                    </span>
-                                </div>
-                                <div className="hidden sm:flex flex-col text-left border-l border-gray-200 pl-3 ml-1">
-                                    <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider leading-none">Your Cart</span>
-                                    <span className="text-sm font-bold text-gray-900 leading-tight">৳580</span>
-                                </div>
-                            </Link>
+                            <div className="flex items-center gap-2">
+                                <Link href={route('wishlist.index')} className="relative p-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                                    <Heart className="h-6 w-6" />
+                                    {(page.props.wishlistCount as number) > 0 && (
+                                        <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                                            {page.props.wishlistCount as number}
+                                        </span>
+                                    )}
+                                </Link>
+                                <Link href={route('cart.index')} className="relative p-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                                    <ShoppingCart className="h-6 w-6" />
+                                    {(page.props.cartCount as number) > 0 && (
+                                        <span className="absolute top-0 right-0 bg-green-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                                            {page.props.cartCount as number}
+                                        </span>
+                                    )}
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                    
+
                     {/* Mobile Search Bar */}
                     <div className="mt-4 lg:hidden relative">
                         <input
@@ -154,12 +156,12 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <AnimatePresence>
                 {mobileMenuOpen && (
                     <>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="fixed inset-0 bg-gray-900/60 z-[60] backdrop-blur-sm lg:hidden"
                             onClick={() => setMobileMenuOpen(false)}
                         />
-                        <motion.div 
+                        <motion.div
                             initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'tween', duration: 0.3 }}
                             className="fixed top-0 left-0 bottom-0 w-4/5 max-w-sm bg-white z-[70] shadow-2xl flex flex-col lg:hidden"
                         >
@@ -221,7 +223,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div>
                             <h3 className="font-bold text-gray-900 mb-6 text-lg">Quick Links</h3>
                             <ul className="space-y-3 text-sm text-gray-600 font-medium">
@@ -231,17 +233,17 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                 <li><Link href={route('contact')} className="hover:text-green-600 transition-colors">Contact Us</Link></li>
                             </ul>
                         </div>
-                        
+
                         <div>
                             <h3 className="font-bold text-gray-900 mb-6 text-lg">Categories</h3>
                             <ul className="space-y-3 text-sm text-gray-600 font-medium">
-                                <li><Link href={route('shop.index', {category: 'produce'})} className="hover:text-green-600 transition-colors">Fresh Vegetables</Link></li>
-                                <li><Link href={route('shop.index', {category: 'meat-seafood'})} className="hover:text-green-600 transition-colors">Meat & Seafood</Link></li>
-                                <li><Link href={route('shop.index', {category: 'dairy'})} className="hover:text-green-600 transition-colors">Dairy & Bakery</Link></li>
-                                <li><Link href={route('shop.index', {category: 'snacks'})} className="hover:text-green-600 transition-colors">Snacks & Beverages</Link></li>
+                                <li><Link href={route('shop.index', { category: 'produce' })} className="hover:text-green-600 transition-colors">Fresh Vegetables</Link></li>
+                                <li><Link href={route('shop.index', { category: 'meat-seafood' })} className="hover:text-green-600 transition-colors">Meat & Seafood</Link></li>
+                                <li><Link href={route('shop.index', { category: 'dairy' })} className="hover:text-green-600 transition-colors">Dairy & Bakery</Link></li>
+                                <li><Link href={route('shop.index', { category: 'snacks' })} className="hover:text-green-600 transition-colors">Snacks & Beverages</Link></li>
                             </ul>
                         </div>
-                        
+
                         <div>
                             <h3 className="font-bold text-gray-900 mb-6 text-lg">Download App</h3>
                             <p className="text-sm text-gray-500 mb-4">Get access to exclusive offers and a better shopping experience.</p>
@@ -264,7 +266,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-sm text-gray-500 font-medium">© 2026 FreshKart BD. All rights reserved.</p>
                         <div className="flex gap-4">

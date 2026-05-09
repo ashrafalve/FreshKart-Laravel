@@ -1,16 +1,22 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import CustomerLayout from '../../layouts/CustomerLayout';
 import { Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 
-export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 }) {
-    // For visual demo, I'll mock some data if none is provided
-    const items = cartItems.length > 0 ? cartItems : [
-        { id: 1, name: 'Fresh Organic Apples', price: 250, quantity: 2, unit: 'kg', image: null },
-        { id: 2, name: 'Whole Wheat Bread', price: 80, quantity: 1, unit: 'piece', image: null },
-    ];
+export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 }: any) {
+    const items = cartItems;
 
-    const displaySubtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const displayTotal = displaySubtotal + 60; // 60 for delivery
+    const displaySubtotal = subtotal;
+    const deliveryCharge = items.length > 0 ? 60 : 0;
+    const displayTotal = displaySubtotal + deliveryCharge + tax;
+
+    const updateQuantity = (id: string | number, newQuantity: number) => {
+        if (newQuantity < 1) return;
+        router.put(route('cart.update', id), { quantity: newQuantity }, { preserveScroll: true });
+    };
+
+    const removeItem = (id: string | number) => {
+        router.delete(route('cart.destroy', id), { preserveScroll: true });
+    };
 
     return (
         <CustomerLayout>
@@ -46,16 +52,18 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                                     </div>
 
                                     <div className="space-y-6">
-                                        {items.map((item) => (
+                                        {items.map((item: any) => (
                                             <div key={item.id} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center pb-6 border-b border-gray-50 last:border-0 last:pb-0">
                                                 <div className="col-span-3 flex items-center gap-4">
-                                                    <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                                        <ShoppingBag className="text-gray-300" />
+                                                    <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+                                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold text-gray-900">{item.name}</h3>
-                                                        <p className="text-sm text-gray-500">Unit: {item.unit}</p>
-                                                        <button className="text-red-500 text-sm flex items-center gap-1 mt-2 hover:text-red-600">
+                                                        <Link href={route('shop.product', item.slug || item.id)}>
+                                                            <h3 className="font-bold text-gray-900 hover:text-green-600 transition-colors">{item.name}</h3>
+                                                        </Link>
+                                                        <p className="text-sm text-gray-500 mt-1">Unit: {item.unit_value} {item.unit}</p>
+                                                        <button onClick={() => removeItem(item.id)} className="text-red-500 text-sm flex items-center gap-1 mt-2 hover:text-red-600 transition-colors">
                                                             <Trash2 className="h-4 w-4" /> Remove
                                                         </button>
                                                     </div>
@@ -64,20 +72,20 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                                                     ৳{item.price}
                                                 </div>
                                                 <div className="flex justify-center">
-                                                    <div className="flex items-center border border-gray-200 rounded-lg">
-                                                        <button className="px-3 py-1 hover:text-green-600">-</button>
-                                                        <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                                                        <button className="px-3 py-1 hover:text-green-600">+</button>
+                                                    <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="px-3 py-1 bg-gray-50 hover:bg-gray-100 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">-</button>
+                                                        <span className="w-10 text-center text-sm font-bold border-x border-gray-200 py-1 bg-white">{item.quantity}</span>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100 hover:text-green-600 transition-colors">+</button>
                                                     </div>
                                                 </div>
                                                 <div className="text-right font-bold text-green-600 hidden md:block">
                                                     ৳{item.price * item.quantity}
                                                 </div>
-                                                
+
                                                 {/* Mobile Price & Total */}
                                                 <div className="flex justify-between items-center md:hidden mt-2">
                                                     <span className="text-gray-500 text-sm">৳{item.price} / each</span>
-                                                    <span className="font-bold text-green-600">৳{item.price * item.quantity}</span>
+                                                    <span className="font-bold text-green-600 text-lg">৳{item.price * item.quantity}</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -89,7 +97,7 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                             <div className="w-full lg:w-1/3">
                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 sticky top-24">
                                     <h2 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">Order Summary</h2>
-                                    
+
                                     <div className="space-y-4 mb-6">
                                         <div className="flex justify-between text-gray-600">
                                             <span>Subtotal</span>

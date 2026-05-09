@@ -4,15 +4,145 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Generate 50 random products
-        Product::factory(50)->create();
+        // For SQLite compatibility, delete instead of truncate
+        Product::query()->delete();
+
+        // Ensure we have a default category
+        $category = Category::firstOrCreate([
+            'slug' => 'grocery'
+        ], [
+            'name' => 'Grocery',
+            'is_active' => true
+        ]);
+
+        $products = [
+            [
+                'name' => 'Miniket Rice (Premium)',
+                'price' => 380,
+                'sale_price' => 365,
+                'unit' => 'kg',
+                'unit_value' => '5',
+                'stock_quantity' => 100,
+                'is_featured' => true,
+                'is_flash_sale' => false,
+            ],
+            [
+                'name' => 'Rupchanda Soyabean Oil',
+                'price' => 850,
+                'sale_price' => 830,
+                'unit' => 'Liter',
+                'unit_value' => '5',
+                'stock_quantity' => 50,
+                'is_featured' => true,
+                'is_flash_sale' => true,
+            ],
+            [
+                'name' => 'Radhuni Turmeric Powder',
+                'price' => 120,
+                'sale_price' => null,
+                'unit' => 'g',
+                'unit_value' => '200',
+                'stock_quantity' => 200,
+                'is_featured' => false,
+                'is_flash_sale' => false,
+            ],
+            [
+                'name' => 'Fresh Refined Sugar',
+                'price' => 140,
+                'sale_price' => 135,
+                'unit' => 'kg',
+                'unit_value' => '1',
+                'stock_quantity' => 150,
+                'is_featured' => true,
+                'is_flash_sale' => false,
+            ],
+            [
+                'name' => 'Teer Atta',
+                'price' => 130,
+                'sale_price' => 125,
+                'unit' => 'kg',
+                'unit_value' => '2',
+                'stock_quantity' => 80,
+                'is_featured' => false,
+                'is_flash_sale' => false,
+            ],
+            [
+                'name' => 'Pran Tomato Ketchup',
+                'price' => 110,
+                'sale_price' => null,
+                'unit' => 'g',
+                'unit_value' => '340',
+                'stock_quantity' => 120,
+                'is_featured' => false,
+                'is_flash_sale' => true,
+            ],
+            [
+                'name' => 'ACI Pure Salt',
+                'price' => 40,
+                'sale_price' => null,
+                'unit' => 'kg',
+                'unit_value' => '1',
+                'stock_quantity' => 300,
+                'is_featured' => false,
+                'is_flash_sale' => false,
+            ],
+            [
+                'name' => 'Radhuni Chilli Powder',
+                'price' => 140,
+                'sale_price' => 135,
+                'unit' => 'g',
+                'unit_value' => '200',
+                'stock_quantity' => 150,
+                'is_featured' => true,
+                'is_flash_sale' => false,
+            ],
+            [
+                'name' => 'Farm Fresh Milk (Pasteurized)',
+                'price' => 90,
+                'sale_price' => 85,
+                'unit' => 'ml',
+                'unit_value' => '1000',
+                'stock_quantity' => 60,
+                'is_featured' => true,
+                'is_flash_sale' => true,
+            ],
+            [
+                'name' => 'Local Onion',
+                'price' => 110,
+                'sale_price' => 100,
+                'unit' => 'kg',
+                'unit_value' => '1',
+                'stock_quantity' => 200,
+                'is_featured' => false,
+                'is_flash_sale' => true,
+            ]
+        ];
+
+        foreach ($products as $p) {
+            Product::create([
+                'name' => $p['name'],
+                'slug' => Str::slug($p['name']),
+                'category_id' => $category->id,
+                'brand_id' => null,
+                'price' => $p['price'],
+                'sale_price' => $p['sale_price'],
+                'unit' => $p['unit'],
+                'unit_value' => $p['unit_value'],
+                'stock_quantity' => $p['stock_quantity'],
+                'sku' => strtoupper(Str::random(8)),
+                'is_featured' => $p['is_featured'],
+                'is_flash_sale' => $p['is_flash_sale'],
+                'description' => 'A premium quality product from Bangladesh. Perfect for your daily needs.',
+            ]);
+        }
     }
 }

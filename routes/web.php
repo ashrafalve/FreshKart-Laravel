@@ -27,10 +27,17 @@ Route::prefix('cart')->group(function () {
     Route::delete('/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 });
 
-Route::prefix('checkout')->group(function () {
+Route::prefix('checkout')->middleware('auth')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+});
+
+use App\Http\Controllers\WishlistController;
+
+Route::prefix('wishlist')->middleware('auth')->group(function () {
+    Route::get('/', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;

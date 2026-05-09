@@ -1,6 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import CustomerLayout from '../../layouts/CustomerLayout';
-import { Filter, ChevronDown, ShoppingCart } from 'lucide-react';
+import { Filter, ChevronDown, ShoppingCart, Heart } from 'lucide-react';
 import { useState } from 'react';
 
 interface ShopProps {
@@ -148,6 +148,21 @@ export default function ShopIndex({ products, categories, filters }: ShopProps) 
 function ProductCard({ product }: { product: any }) {
     const dummyImage = `https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400&sig=${product.id}`;
     
+    const addToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        router.post(route('cart.store'), {
+            product_id: product.id,
+            quantity: 1
+        }, { preserveScroll: true });
+    };
+
+    const toggleWishlist = (e: React.MouseEvent) => {
+        e.preventDefault();
+        router.post(route('wishlist.toggle'), {
+            product_id: product.id
+        }, { preserveScroll: true });
+    };
+
     return (
         <div className="bg-white rounded-lg p-4 md:p-5 border border-gray-200 hover:border-green-300 shadow-sm hover:shadow-md transition-all duration-300 group relative flex flex-col h-full">
             {/* Badges */}
@@ -163,6 +178,13 @@ function ProductCard({ product }: { product: any }) {
                     </span>
                 )}
             </div>
+
+            <button 
+                onClick={toggleWishlist}
+                className="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-white shadow-sm transition-all"
+            >
+                <Heart className="w-4 h-4" />
+            </button>
             
             <Link href={route('shop.product', product.slug)} className="block relative aspect-[4/3] bg-gray-50 rounded-md mb-5 overflow-hidden">
                  <img 
@@ -172,7 +194,7 @@ function ProductCard({ product }: { product: any }) {
                  />
                  {/* Add to cart overlay for desktop */}
                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center">
-                    <button className="bg-white text-gray-900 font-bold px-4 py-2 rounded-md transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-sm flex items-center gap-2 hover:bg-green-600 hover:text-white">
+                    <button onClick={addToCart} className="bg-white text-gray-900 font-bold px-4 py-2 rounded-md transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-sm flex items-center gap-2 hover:bg-green-600 hover:text-white">
                         <ShoppingCart className="w-4 h-4" /> Quick Add
                     </button>
                  </div>
@@ -201,7 +223,7 @@ function ProductCard({ product }: { product: any }) {
                                 <span className="font-extrabold text-xl text-gray-900">৳{product.price}</span>
                             )}
                         </div>
-                        <button className="bg-gray-100 border border-gray-200 text-gray-700 hover:bg-green-600 hover:border-green-600 hover:text-white p-2.5 rounded-md transition-colors md:hidden">
+                        <button onClick={addToCart} className="bg-gray-100 border border-gray-200 text-gray-700 hover:bg-green-600 hover:border-green-600 hover:text-white p-2.5 rounded-md transition-colors md:hidden">
                             <ShoppingCart className="h-5 w-5" strokeWidth={2} />
                         </button>
                     </div>

@@ -45,6 +45,16 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'cartCount' => function () {
+                $cart = session()->get('cart', []);
+                return array_sum(array_column($cart, 'quantity'));
+            },
+            'wishlistCount' => function () use ($request) {
+                if ($request->user()) {
+                    return \Illuminate\Support\Facades\DB::table('wishlists')->where('user_id', $request->user()->id)->count();
+                }
+                return 0;
+            },
         ]);
     }
 }
