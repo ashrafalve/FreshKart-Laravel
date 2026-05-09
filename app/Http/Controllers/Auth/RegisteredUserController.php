@@ -43,8 +43,9 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+        
+        Auth::login($user);
 
-        // Redirect to login page after registration instead of auto-login
-        return to_route('login')->with('status', 'Your account has been created. Please sign in.');
+        return to_route('dashboard');
     }
 }
