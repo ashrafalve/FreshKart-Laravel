@@ -2,9 +2,16 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 import {
     ShoppingCart, Search, User, Menu, Heart, Phone, MapPin, ChevronDown,
-    X, Grid, Percent
+    X, Grid, Percent, LogOut, UserCircle, Package, MapPin as MapPinIcon, CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
     const page = usePage();
@@ -85,12 +92,61 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                             {/* Auth Dropdown / Links */}
                             <div className="hidden md:flex items-center">
                                 {auth?.user ? (
-                                    <Link href={route('dashboard')} className="flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium transition-colors p-2 rounded-md hover:bg-gray-50">
-                                        <div className="w-8 h-8 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 font-bold">
-                                            {auth.user.name.charAt(0)}
-                                        </div>
-                                        <span className="max-w-[100px] truncate">{auth.user.name}</span>
-                                    </Link>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <button className="flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium transition-colors p-2 rounded-md hover:bg-gray-50">
+                                                <div className="w-8 h-8 rounded-md bg-green-600 text-white border border-green-700 flex items-center justify-center font-bold">
+                                                    {(auth.user.name || 'U').charAt(0).toUpperCase()}
+                                                </div>
+                                                <span className="max-w-[100px] truncate">{auth.user.name}</span>
+                                                <ChevronDown className="h-4 w-4 text-gray-400" />
+                                            </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-56">
+                                            <div className="px-3 py-2 border-b border-gray-100">
+                                                <p className="font-medium text-gray-900">{auth.user.name}</p>
+                                                <p className="text-xs text-gray-500">{auth.user.email}</p>
+                                            </div>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem asChild>
+                                                <Link href={route('dashboard')} className="flex items-center gap-2 cursor-pointer">
+                                                    <UserCircle className="h-4 w-4" /> My Account
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href={route('dashboard')} className="flex items-center gap-2 cursor-pointer">
+                                                    <Package className="h-4 w-4" /> My Orders
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href={route('wishlist.index')} className="flex items-center gap-2 cursor-pointer">
+                                                    <Heart className="h-4 w-4" /> My Wishlist
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href="#" className="flex items-center gap-2 cursor-pointer">
+                                                    <MapPinIcon className="h-4 w-4" /> My Addresses
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href="#" className="flex items-center gap-2 cursor-pointer">
+                                                    <CreditCard className="h-4 w-4" /> Payment Methods
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem asChild>
+                                                <Link href={route('profile.edit')} className="flex items-center gap-2 cursor-pointer">
+                                                    <User className="h-4 w-4" /> Edit Profile
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem asChild>
+                                                <Link method="post" href={route('logout')} as="button" className="flex items-center gap-2 cursor-pointer text-red-600 hover:bg-red-50">
+                                                    <LogOut className="h-4 w-4" /> Log Out
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 ) : (
                                     <Link href={route('login')} className="flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium transition-colors p-2 rounded-md hover:bg-gray-50 border border-transparent hover:border-gray-200">
                                         <User className="h-5 w-5" />

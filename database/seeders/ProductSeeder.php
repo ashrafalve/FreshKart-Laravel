@@ -14,7 +14,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // For SQLite compatibility, delete instead of truncate
-        Product::query()->delete();
+        DB::table('products')->delete();
 
         // Ensure we have a default category
         $category = Category::firstOrCreate([
@@ -34,6 +34,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 100,
                 'is_featured' => true,
                 'is_flash_sale' => false,
+                'is_trending' => true,
             ],
             [
                 'name' => 'Rupchanda Soyabean Oil',
@@ -44,6 +45,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 50,
                 'is_featured' => true,
                 'is_flash_sale' => true,
+                'is_trending' => true,
             ],
             [
                 'name' => 'Radhuni Turmeric Powder',
@@ -54,6 +56,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 200,
                 'is_featured' => false,
                 'is_flash_sale' => false,
+                'is_trending' => false,
             ],
             [
                 'name' => 'Fresh Refined Sugar',
@@ -64,6 +67,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 150,
                 'is_featured' => true,
                 'is_flash_sale' => false,
+                'is_trending' => true,
             ],
             [
                 'name' => 'Teer Atta',
@@ -74,6 +78,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 80,
                 'is_featured' => false,
                 'is_flash_sale' => false,
+                'is_trending' => false,
             ],
             [
                 'name' => 'Pran Tomato Ketchup',
@@ -84,6 +89,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 120,
                 'is_featured' => false,
                 'is_flash_sale' => true,
+                'is_trending' => true,
             ],
             [
                 'name' => 'ACI Pure Salt',
@@ -94,6 +100,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 300,
                 'is_featured' => false,
                 'is_flash_sale' => false,
+                'is_trending' => false,
             ],
             [
                 'name' => 'Radhuni Chilli Powder',
@@ -104,6 +111,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 150,
                 'is_featured' => true,
                 'is_flash_sale' => false,
+                'is_trending' => true,
             ],
             [
                 'name' => 'Farm Fresh Milk (Pasteurized)',
@@ -114,6 +122,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 60,
                 'is_featured' => true,
                 'is_flash_sale' => true,
+                'is_trending' => true,
             ],
             [
                 'name' => 'Local Onion',
@@ -124,6 +133,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 200,
                 'is_featured' => false,
                 'is_flash_sale' => true,
+                'is_trending' => true,
             ]
         ];
 
@@ -141,6 +151,7 @@ class ProductSeeder extends Seeder
                 'sku' => strtoupper(Str::random(8)),
                 'is_featured' => $p['is_featured'],
                 'is_flash_sale' => $p['is_flash_sale'],
+                'is_trending' => $p['is_trending'],
                 'description' => 'A premium quality product from Bangladesh. Perfect for your daily needs.',
             ]);
         }

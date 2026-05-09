@@ -1,10 +1,28 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import CustomerLayout from '../../layouts/CustomerLayout';
-import { MapPin, CreditCard, ShieldCheck } from 'lucide-react';
+import { MapPin, CreditCard, ShieldCheck, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Checkout() {
-    const [paymentMethod, setPaymentMethod] = useState('cod');
+export default function Checkout({ cart = [], addresses = [] }: { cart: any[], addresses: any[] }) {
+    const { auth } = usePage().props as any;
+    
+    const { data, setData, post, processing, errors } = useForm({
+        recipient_name: auth?.user?.name || '',
+        phone: auth?.user?.phone || '',
+        address_line1: '',
+        city: 'Dhaka',
+        area: 'Banani',
+        payment_method: 'cod',
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('checkout.store'));
+    };
+
+    const subtotal = 580; // Placeholder for now, should calculate from cart
+    const shipping = 60;
+    const total = subtotal + shipping;
 
     return (
         <CustomerLayout>
@@ -14,7 +32,7 @@ export default function Checkout() {
                 <div className="container mx-auto px-4">
                     <h1 className="text-3xl font-bold text-gray-900 mb-8">Secure Checkout</h1>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
+                    <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8">
                         {/* Checkout Form */}
                         <div className="w-full lg:w-2/3 space-y-6">
                             
@@ -30,19 +48,47 @@ export default function Checkout() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                        <input type="text" className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" placeholder="John Doe" />
+                                        <input 
+                                            type="text" 
+                                            value={data.recipient_name}
+                                            onChange={e => setData('recipient_name', e.target.value)}
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" 
+                                            placeholder="John Doe" 
+                                            required
+                                        />
+                                        {errors.recipient_name && <p className="text-red-500 text-xs mt-1">{errors.recipient_name}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                        <input type="text" className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" placeholder="+880 1..." />
+                                        <input 
+                                            type="text" 
+                                            value={data.phone}
+                                            onChange={e => setData('phone', e.target.value)}
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" 
+                                            placeholder="+880 1..." 
+                                            required
+                                        />
+                                        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Detailed Address (House, Road, Area)</label>
-                                        <textarea className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" rows={3} placeholder="e.g. House 12, Road 5, Block C, Banani"></textarea>
+                                        <textarea 
+                                            value={data.address_line1}
+                                            onChange={e => setData('address_line1', e.target.value)}
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" 
+                                            rows={3} 
+                                            placeholder="e.g. House 12, Road 5, Block C, Banani"
+                                            required
+                                        ></textarea>
+                                        {errors.address_line1 && <p className="text-red-500 text-xs mt-1">{errors.address_line1}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                        <select className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                                        <select 
+                                            value={data.city}
+                                            onChange={e => setData('city', e.target.value)}
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                                        >
                                             <option>Dhaka</option>
                                             <option>Chittagong</option>
                                             <option>Sylhet</option>
@@ -50,33 +96,16 @@ export default function Checkout() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Area / Thana</label>
-                                        <select className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                                        <select 
+                                            value={data.area}
+                                            onChange={e => setData('area', e.target.value)}
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                                        >
                                             <option>Banani</option>
                                             <option>Gulshan</option>
                                             <option>Dhanmondi</option>
                                         </select>
                                     </div>
-                                </div>
-                            </div>
-
-                            {/* Delivery Time */}
-                            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">Delivery Time</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <label className="border border-green-500 bg-green-50 rounded-xl p-4 cursor-pointer flex items-start gap-3">
-                                        <input type="radio" name="delivery_time" className="mt-1 text-green-600 focus:ring-green-500" defaultChecked />
-                                        <div>
-                                            <div className="font-bold text-gray-900">Standard Delivery</div>
-                                            <div className="text-sm text-gray-500">Today, 2:00 PM - 5:00 PM</div>
-                                        </div>
-                                    </label>
-                                    <label className="border border-gray-200 rounded-xl p-4 cursor-pointer flex items-start gap-3 hover:border-green-200 transition-colors">
-                                        <input type="radio" name="delivery_time" className="mt-1 text-green-600 focus:ring-green-500" />
-                                        <div>
-                                            <div className="font-bold text-gray-900">Express Delivery (+$50)</div>
-                                            <div className="text-sm text-gray-500">Within 1 Hour</div>
-                                        </div>
-                                    </label>
                                 </div>
                             </div>
 
@@ -89,38 +118,27 @@ export default function Checkout() {
                                     <h2 className="text-xl font-bold text-gray-900">Payment Method</h2>
                                 </div>
                                 <div className="space-y-4">
-                                    <label className={`border ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 cursor-pointer flex items-center gap-4 transition-colors`}>
+                                    <label className={`border ${data.payment_method === 'cod' ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 cursor-pointer flex items-center gap-4 transition-colors`}>
                                         <input 
                                             type="radio" 
                                             name="payment" 
                                             value="cod" 
-                                            checked={paymentMethod === 'cod'} 
-                                            onChange={() => setPaymentMethod('cod')}
+                                            checked={data.payment_method === 'cod'} 
+                                            onChange={() => setData('payment_method', 'cod')}
                                             className="text-green-600 focus:ring-green-500" 
                                         />
                                         <span className="font-bold text-gray-900">Cash on Delivery</span>
                                     </label>
-                                    <label className={`border ${paymentMethod === 'bkash' ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 cursor-pointer flex items-center gap-4 transition-colors`}>
+                                    <label className={`border ${data.payment_method === 'bkash' ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 cursor-pointer flex items-center gap-4 transition-colors`}>
                                         <input 
                                             type="radio" 
                                             name="payment" 
                                             value="bkash" 
-                                            checked={paymentMethod === 'bkash'} 
-                                            onChange={() => setPaymentMethod('bkash')}
+                                            checked={data.payment_method === 'bkash'} 
+                                            onChange={() => setData('payment_method', 'bkash')}
                                             className="text-green-600 focus:ring-green-500" 
                                         />
                                         <span className="font-bold text-gray-900">bKash Payment</span>
-                                    </label>
-                                    <label className={`border ${paymentMethod === 'ssl' ? 'border-green-500 bg-green-50' : 'border-gray-200'} rounded-xl p-4 cursor-pointer flex items-center gap-4 transition-colors`}>
-                                        <input 
-                                            type="radio" 
-                                            name="payment" 
-                                            value="ssl" 
-                                            checked={paymentMethod === 'ssl'} 
-                                            onChange={() => setPaymentMethod('ssl')}
-                                            className="text-green-600 focus:ring-green-500" 
-                                        />
-                                        <span className="font-bold text-gray-900">Credit / Debit Card (SSLCommerz)</span>
                                     </label>
                                 </div>
                             </div>
@@ -131,39 +149,21 @@ export default function Checkout() {
                             <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 sticky top-24">
                                 <h2 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">Order Summary</h2>
                                 
-                                <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
-                                    {/* Dummy Items */}
-                                    <div className="flex justify-between text-sm">
-                                        <div className="flex gap-2">
-                                            <span className="font-medium text-gray-900">2x</span>
-                                            <span className="text-gray-600 line-clamp-1">Fresh Organic Apples</span>
-                                        </div>
-                                        <span className="font-medium text-gray-900">৳500</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <div className="flex gap-2">
-                                            <span className="font-medium text-gray-900">1x</span>
-                                            <span className="text-gray-600 line-clamp-1">Whole Wheat Bread</span>
-                                        </div>
-                                        <span className="font-medium text-gray-900">৳80</span>
-                                    </div>
-                                </div>
-
                                 <div className="space-y-3 mb-6 pt-4 border-t border-gray-100">
                                     <div className="flex justify-between text-sm text-gray-600">
                                         <span>Subtotal</span>
-                                        <span className="font-medium text-gray-900">৳580</span>
+                                        <span className="font-medium text-gray-900">৳{subtotal}</span>
                                     </div>
                                     <div className="flex justify-between text-sm text-gray-600">
                                         <span>Delivery Charge</span>
-                                        <span className="font-medium text-gray-900">৳60</span>
+                                        <span className="font-medium text-gray-900">৳{shipping}</span>
                                     </div>
                                 </div>
 
                                 <div className="border-t border-gray-100 pt-4 mb-6">
                                     <div className="flex justify-between items-center mb-1">
                                         <span className="font-bold text-gray-900">Total</span>
-                                        <span className="text-2xl font-bold text-green-600">৳640</span>
+                                        <span className="text-2xl font-bold text-green-600">৳{total}</span>
                                     </div>
                                 </div>
 
@@ -172,12 +172,23 @@ export default function Checkout() {
                                     Secure and encrypted payment processing.
                                 </div>
 
-                                <Link href={route('checkout.success')} method="post" as="button" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-200">
-                                    Place Order
-                                </Link>
+                                <button 
+                                    type="submit" 
+                                    disabled={processing}
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-200 disabled:opacity-50"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Loader2 className="h-5 w-5 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        'Place Order'
+                                    )}
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </CustomerLayout>

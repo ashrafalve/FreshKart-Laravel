@@ -73,9 +73,9 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                                                 </div>
                                                 <div className="flex justify-center">
                                                     <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="px-3 py-1 bg-gray-50 hover:bg-gray-100 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">-</button>
-                                                        <span className="w-10 text-center text-sm font-bold border-x border-gray-200 py-1 bg-white">{item.quantity}</span>
-                                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100 hover:text-green-600 transition-colors">+</button>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-gray-900 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">-</button>
+                                                        <span className="w-10 text-center text-sm font-bold text-gray-900 border-x border-gray-200 py-1 bg-white">{item.quantity}</span>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-gray-900 hover:text-green-600 transition-colors">+</button>
                                                     </div>
                                                 </div>
                                                 <div className="text-right font-bold text-green-600 hidden md:block">

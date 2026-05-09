@@ -27,15 +27,17 @@ class CheckoutController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'address_id' => 'required_without:new_address',
-            'payment_method' => 'required|in:cod,sslcommerz,bkash,nagad',
-            // ... other validations
+        $request->validate([
+            'recipient_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address_line1' => 'required|string|max:500',
+            'payment_method' => 'required|in:cod,bkash',
         ]);
 
-        // Process order logic here
-
-        return redirect()->route('checkout.success')->with('success', 'Order placed successfully!');
+        // In a real app, we would create the order in the database here
+        // and clear the cart. For now, we redirect to success.
+        
+        return redirect()->route('checkout.success')->with('success', 'Your order has been placed!');
     }
 
     /**
