@@ -15,8 +15,8 @@ export default function EditProduct({ product, categories, brands }: any) {
         unit: product.unit || 'kg',
         unit_value: product.unit_value || '1',
         sku: product.sku || '',
-        is_active: product.is_active == 1,
-        is_featured: product.is_featured == 1,
+        is_active: (product.is_active == 1) as boolean,
+        is_featured: (product.is_featured == 1) as boolean,
     });
 
     const submit: FormEventHandler = (e) => {

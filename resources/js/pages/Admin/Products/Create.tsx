@@ -15,8 +15,8 @@ export default function CreateProduct({ categories, brands }: any) {
         unit: 'kg',
         unit_value: '1',
         sku: '',
-        is_active: true,
-        is_featured: false,
+        is_active: true as boolean,
+        is_featured: false as boolean,
     });
 
     const submit: FormEventHandler = (e) => {
