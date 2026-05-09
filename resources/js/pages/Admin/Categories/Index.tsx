@@ -19,6 +19,13 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
         sort_order: 0,
     });
 
+    const handleSearch = () => {
+        router.get(route('admin.categories.index'), { search: searchQuery }, {
+            preserveState: true,
+            replace: true
+        });
+    };
+
     const handleSubmit = () => {
         if (editingId) {
             router.put(route('admin.categories.update', editingId), formData);
@@ -70,7 +77,9 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                             placeholder="Search categories..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            onBlur={handleSearch}
+                            className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-900 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
                         />
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                     </div>
@@ -135,7 +144,7 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     required
                                 />
                             </div>
@@ -145,7 +154,7 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                                     type="text"
                                     value={formData.slug}
                                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                 />
                             </div>
                             <div>
@@ -153,7 +162,7 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     rows={3}
                                 />
                             </div>
@@ -163,7 +172,7 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                                     type="number"
                                     value={formData.sort_order}
                                     onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                 />
                             </div>
                             <div className="flex items-center gap-2">

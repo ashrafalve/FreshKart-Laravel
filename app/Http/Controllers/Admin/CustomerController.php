@@ -24,10 +24,11 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $query->orderBy('created_at', 'desc')->paginate(15);
+        $customers = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         return Inertia::render('Admin/Customers/Index', [
-            'customers' => $customers
+            'customers' => $customers,
+            'filters' => $request->only(['search'])
         ]);
     }
 
@@ -54,6 +55,19 @@ class CustomerController extends Controller
 
         $customer->update($request->only(['name', 'email', 'phone', 'status', 'role']));
 
-        return redirect()->route('admin.customers.index')->with('success', 'Customer updated successfully.');
+        return redirect()->back()->with('success', 'Customer updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $customer = User::findOrFail($id);
+        
+        if ($customer->id === auth()->id()) {
+            return redirect()->back()->with('error', 'You cannot delete yourself!');
+        }
+
+        $customer->delete();
+
+        return redirect()->route('admin.customers.index')->with('success', 'User deleted successfully.');
     }
 }

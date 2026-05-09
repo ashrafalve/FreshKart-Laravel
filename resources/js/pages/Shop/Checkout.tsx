@@ -3,7 +3,7 @@ import CustomerLayout from '../../layouts/CustomerLayout';
 import { MapPin, CreditCard, ShieldCheck, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Checkout({ cart = [], addresses = [] }: { cart: any[], addresses: any[] }) {
+export default function Checkout({ cart = [], addresses = [], subtotal = 0, shipping = 60 }: { cart: any[], addresses: any[], subtotal: number, shipping: number }) {
     const { auth } = usePage().props as any;
     
     const { data, setData, post, processing, errors } = useForm({
@@ -20,8 +20,6 @@ export default function Checkout({ cart = [], addresses = [] }: { cart: any[], a
         post(route('checkout.store'));
     };
 
-    const subtotal = 580; // Placeholder for now, should calculate from cart
-    const shipping = 60;
     const total = subtotal + shipping;
 
     return (
@@ -52,7 +50,7 @@ export default function Checkout({ cart = [], addresses = [] }: { cart: any[], a
                                             type="text" 
                                             value={data.recipient_name}
                                             onChange={e => setData('recipient_name', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" 
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-gray-900" 
                                             placeholder="John Doe" 
                                             required
                                         />
@@ -64,7 +62,7 @@ export default function Checkout({ cart = [], addresses = [] }: { cart: any[], a
                                             type="text" 
                                             value={data.phone}
                                             onChange={e => setData('phone', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" 
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-gray-900" 
                                             placeholder="+880 1..." 
                                             required
                                         />
@@ -75,7 +73,7 @@ export default function Checkout({ cart = [], addresses = [] }: { cart: any[], a
                                         <textarea 
                                             value={data.address_line1}
                                             onChange={e => setData('address_line1', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500" 
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-gray-900" 
                                             rows={3} 
                                             placeholder="e.g. House 12, Road 5, Block C, Banani"
                                             required
@@ -84,27 +82,25 @@ export default function Checkout({ cart = [], addresses = [] }: { cart: any[], a
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                        <select 
+                                        <input 
+                                            type="text"
                                             value={data.city}
                                             onChange={e => setData('city', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
-                                        >
-                                            <option>Dhaka</option>
-                                            <option>Chittagong</option>
-                                            <option>Sylhet</option>
-                                        </select>
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                                            placeholder="e.g. Dhaka"
+                                            required
+                                        />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Area / Thana</label>
-                                        <select 
+                                        <input 
+                                            type="text"
                                             value={data.area}
                                             onChange={e => setData('area', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
-                                        >
-                                            <option>Banani</option>
-                                            <option>Gulshan</option>
-                                            <option>Dhanmondi</option>
-                                        </select>
+                                            className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                                            placeholder="e.g. Banani"
+                                            required
+                                        />
                                     </div>
                                 </div>
                             </div>

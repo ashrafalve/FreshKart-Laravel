@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../layouts/AdminLayout';
 import { Plus, Search, Edit, Trash2, Package, Image as ImageIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -7,8 +7,18 @@ interface ProductsIndexProps {
     products: any; // Using any for quick scaffolding, ideally type this properly
 }
 
-export default function ProductsIndex({ products }: ProductsIndexProps) {
-    const [searchQuery, setSearchQuery] = useState('');
+export default function ProductsIndex({ products, categories = [], filters = {} }: { products: any, categories: any[], filters: any }) {
+    const [searchQuery, setSearchQuery] = useState(filters.search || '');
+
+    const handleFilter = (key: string, value: string) => {
+        router.get(route('admin.products.index'), {
+            ...filters,
+            [key]: value
+        }, {
+            preserveState: true,
+            replace: true
+        });
+    };
 
     return (
         <AdminLayout>
@@ -33,18 +43,29 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
                             placeholder="Search products..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
+                            onKeyDown={(e) => e.key === 'Enter' && handleFilter('search', searchQuery)}
+                            onBlur={() => handleFilter('search', searchQuery)}
+                            className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-900 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
                         />
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                     </div>
                     <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none w-full sm:w-auto">
+                        <select 
+                            value={filters.category || ''}
+                            onChange={(e) => handleFilter('category', e.target.value)}
+                            className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none w-full sm:w-auto"
+                        >
                             <option value="">All Categories</option>
-                            <option value="produce">Fresh Produce</option>
-                            <option value="meat">Meat & Seafood</option>
+                            {categories.map((cat: any) => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
                         </select>
-                        <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none w-full sm:w-auto">
-                            <option value="all">All Status</option>
+                        <select 
+                            value={filters.status || ''}
+                            onChange={(e) => handleFilter('status', e.target.value)}
+                            className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none w-full sm:w-auto"
+                        >
+                            <option value="">All Status</option>
                             <option value="active">Active</option>
                             <option value="draft">Draft</option>
                         </select>

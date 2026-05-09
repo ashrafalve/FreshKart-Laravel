@@ -1,14 +1,24 @@
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../layouts/AdminLayout';
-import { Eye, Edit, Search, Package } from 'lucide-react';
+import { Eye, Edit, Search, Package, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface OrdersIndexProps {
     orders: any;
 }
 
-export default function OrdersIndex({ orders }: OrdersIndexProps) {
-    const [statusFilter, setStatusFilter] = useState('');
+export default function OrdersIndex({ orders, filters = {} }: { orders: any, filters: any }) {
+    const [searchQuery, setSearchQuery] = useState(filters.q || '');
+
+    const handleFilter = (key: string, value: string) => {
+        router.get(route('admin.orders.index'), {
+            ...filters,
+            [key]: value
+        }, {
+            preserveState: true,
+            replace: true
+        });
+    };
 
     return (
         <AdminLayout>
@@ -24,10 +34,22 @@ export default function OrdersIndex({ orders }: OrdersIndexProps) {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div className="relative w-full sm:w-64">
+                            <input
+                                type="text"
+                                placeholder="Search by Order # or Customer..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleFilter('q', searchQuery)}
+                                onBlur={() => handleFilter('q', searchQuery)}
+                                className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-900 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
+                            />
+                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                        </div>
                         <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg py-2 px-3"
+                            value={filters.status || ''}
+                            onChange={(e) => handleFilter('status', e.target.value)}
+                            className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none w-full sm:w-auto"
                         >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
@@ -76,6 +98,17 @@ export default function OrdersIndex({ orders }: OrdersIndexProps) {
                                             <Link href={route('admin.orders.show', order.id)} className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors" title="View">
                                                 <Eye className="h-4 w-4" />
                                             </Link>
+                                            <button 
+                                                onClick={() => {
+                                                    if(confirm('Are you sure you want to delete this order?')) {
+                                                        router.delete(route('admin.orders.destroy', order.id));
+                                                    }
+                                                }}
+                                                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors" 
+                                                title="Delete"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

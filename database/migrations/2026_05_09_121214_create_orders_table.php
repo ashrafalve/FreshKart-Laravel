@@ -39,8 +39,8 @@ return new class extends Migration
             $table->string('shipping_address_line2')->nullable();
             $table->string('shipping_area')->nullable();
             $table->string('shipping_city');
-            $table->string('shipping_district');
-            $table->string('shipping_division');
+            $table->string('shipping_district')->nullable();
+            $table->string('shipping_division')->nullable();
             $table->string('shipping_postal_code', 20)->nullable();
 
             $table->text('order_notes')->nullable();

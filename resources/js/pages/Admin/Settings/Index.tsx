@@ -47,7 +47,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="text"
                                         value={formData.site_name}
                                         onChange={(e) => setFormData({ ...formData, site_name: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -56,7 +56,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="email"
                                         value={formData.site_email}
                                         onChange={(e) => setFormData({ ...formData, site_email: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -65,7 +65,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="text"
                                         value={formData.site_phone}
                                         onChange={(e) => setFormData({ ...formData, site_phone: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -73,7 +73,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                     <select
                                         value={formData.currency}
                                         onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     >
                                         <option value="BDT">BDT (Taka)</option>
                                         <option value="USD">USD (Dollar)</option>
@@ -84,7 +84,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                     <textarea
                                         value={formData.site_address}
                                         onChange={(e) => setFormData({ ...formData, site_address: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                         rows={3}
                                     />
                                 </div>
@@ -102,7 +102,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         step="0.01"
                                         value={formData.tax_rate}
                                         onChange={(e) => setFormData({ ...formData, tax_rate: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -111,7 +111,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="number"
                                         value={formData.delivery_charge}
                                         onChange={(e) => setFormData({ ...formData, delivery_charge: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -120,7 +120,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="number"
                                         value={formData.min_order_amount}
                                         onChange={(e) => setFormData({ ...formData, min_order_amount: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                             </div>
@@ -136,7 +136,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="url"
                                         value={formData.facebook_url}
                                         onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -145,7 +145,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="url"
                                         value={formData.twitter_url}
                                         onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                                 <div>
@@ -154,7 +154,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                         type="url"
                                         value={formData.instagram_url}
                                         onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:ring-green-500 focus:border-green-500 outline-none"
                                     />
                                 </div>
                             </div>

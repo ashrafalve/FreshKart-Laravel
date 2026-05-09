@@ -1,22 +1,56 @@
 import { Head, Link, router } from '@inertiajs/react';
 import CustomerLayout from '../../layouts/CustomerLayout';
 import { Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
-export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 }: any) {
-    const items = cartItems;
+export default function Cart({ cartItems = [], subtotal = 0, total = 0 }: any) {
+    const [localItems, setLocalItems] = useState(cartItems);
 
-    const displaySubtotal = subtotal;
-    const deliveryCharge = items.length > 0 ? 60 : 0;
-    const displayTotal = displaySubtotal + deliveryCharge + tax;
+    // Sync local items if cartItems prop changes (after server response)
+    useEffect(() => {
+        setLocalItems(cartItems);
+    }, [cartItems]);
+
+    const displaySubtotal = useMemo(() => {
+        return localItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+    }, [localItems]);
+
+    const deliveryCharge = localItems.length > 0 ? 60 : 0;
+    const displayTotal = displaySubtotal + deliveryCharge;
+
+    const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const updateQuantity = (id: string | number, newQuantity: number) => {
         if (newQuantity < 1) return;
-        router.put(route('cart.update', id), { quantity: newQuantity }, { preserveScroll: true });
+        
+        // Optimistic update (Instant UI feedback)
+        setLocalItems(prev => prev.map((item: any) => 
+            item.id === id ? { ...item, quantity: newQuantity } : item
+        ));
+
+        // Debounce server sync
+        if (updateTimeout.current) clearTimeout(updateTimeout.current);
+        
+        updateTimeout.current = setTimeout(() => {
+            router.put(route('cart.update', id), { quantity: newQuantity }, { 
+                preserveScroll: true,
+                onFinish: () => {
+                    // Props sync will happen automatically via useEffect
+                }
+            });
+        }, 500); // Wait 500ms before sending to server
     };
 
     const removeItem = (id: string | number) => {
         router.delete(route('cart.destroy', id), { preserveScroll: true });
     };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (updateTimeout.current) clearTimeout(updateTimeout.current);
+        };
+    }, []);
 
     return (
         <CustomerLayout>
@@ -26,7 +60,7 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                 <div className="container mx-auto px-4">
                     <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
-                    {items.length === 0 ? (
+                    {localItems.length === 0 ? (
                         <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">
                             <div className="flex justify-center mb-6">
                                 <div className="bg-green-50 p-6 rounded-full text-green-600">
@@ -52,7 +86,7 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                                     </div>
 
                                     <div className="space-y-6">
-                                        {items.map((item: any) => (
+                                        {localItems.map((item: any) => (
                                             <div key={item.id} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center pb-6 border-b border-gray-50 last:border-0 last:pb-0">
                                                 <div className="col-span-3 flex items-center gap-4">
                                                     <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
@@ -107,17 +141,7 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                                             <span>Delivery Charge</span>
                                             <span className="font-medium text-gray-900">৳60</span>
                                         </div>
-                                        <div className="flex justify-between text-gray-600">
-                                            <span>Tax</span>
-                                            <span className="font-medium text-gray-900">৳0</span>
-                                        </div>
-                                    </div>
 
-                                    <div className="mb-6">
-                                        <div className="flex gap-2">
-                                            <input type="text" placeholder="Promo Code" className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500" />
-                                            <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">Apply</button>
-                                        </div>
                                     </div>
 
                                     <div className="border-t border-gray-100 pt-4 mb-6">
@@ -125,7 +149,7 @@ export default function Cart({ cartItems = [], subtotal = 0, tax = 0, total = 0 
                                             <span className="font-bold text-gray-900">Total</span>
                                             <span className="text-2xl font-bold text-green-600">৳{displayTotal}</span>
                                         </div>
-                                        <p className="text-xs text-gray-500 text-right mt-1">Including all taxes</p>
+
                                     </div>
 
                                     <Link href={route('checkout.index')} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-200">

@@ -6,6 +6,8 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
+use Illuminate\Support\Facades\Cache;
+
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -36,11 +38,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-
         return array_merge(parent::share($request), [
             'name' => config('app.name'),
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
             ],
@@ -54,6 +53,15 @@ class HandleInertiaRequests extends Middleware
                 }
                 return 0;
             },
+            'categories' => function () {
+                return Cache::remember('all_categories', 3600, function() {
+                    return \App\Models\Category::where('is_active', true)->withCount('products')->get();
+                });
+            },
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
         ]);
     }
 }

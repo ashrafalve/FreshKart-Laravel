@@ -1,8 +1,8 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 import {
     ShoppingCart, Search, User, Menu, Heart, Phone, MapPin, ChevronDown,
-    X, Grid, Percent, LogOut, UserCircle, Package, MapPin as MapPinIcon, CreditCard
+    X, Grid, Percent, LogOut, UserCircle, Package, MapPin as MapPinIcon, CreditCard, Smartphone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -16,8 +16,11 @@ import {
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
     const page = usePage();
     const { auth } = page.props as any;
+    const categories = (page.props.categories as any[]) || [];
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchCategory, setSearchCategory] = useState('all');
 
     useEffect(() => {
         const handleScroll = () => {
@@ -26,6 +29,16 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const params: any = {};
+        if (searchQuery) params.q = searchQuery;
+        if (searchCategory !== 'all') params.category = searchCategory;
+        
+        // Use router from @inertiajs/react for navigation
+        router.get(route('shop.index'), params);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans selection:bg-green-100 selection:text-green-900">
@@ -38,7 +51,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                     </div>
                     <div className="flex items-center gap-4">
                         <Link href="#" className="hover:text-white transition-colors">Help Center</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Track Order</Link>
+                        <Link href={route('dashboard')} className="hover:text-white transition-colors">Track Order</Link>
                         <span className="text-gray-700">|</span>
                         <span className="text-green-400 font-bold">100% Secure Delivery</span>
                     </div>
@@ -70,21 +83,28 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
 
                         {/* Search Bar - Center */}
                         <div className="hidden lg:flex flex-1 max-w-3xl relative">
-                            <div className="relative w-full flex">
-                                <select className="bg-gray-100 border-y border-l border-gray-200 text-gray-700 text-sm rounded-l-md px-3 py-3 outline-none focus:ring-0 focus:border-gray-200 font-medium border-r-0 cursor-pointer hover:bg-gray-200 transition-colors">
-                                    <option>All Categories</option>
-                                    <option>Grocery</option>
-                                    <option>Meat</option>
+                            <form onSubmit={handleSearch} className="relative w-full flex">
+                                <select 
+                                    value={searchCategory}
+                                    onChange={(e) => setSearchCategory(e.target.value)}
+                                    className="bg-gray-100 border-y border-l border-gray-200 text-gray-700 text-sm rounded-l-md px-3 py-3 outline-none focus:ring-0 focus:border-gray-200 font-medium border-r-0 cursor-pointer hover:bg-gray-200 transition-colors"
+                                >
+                                    <option value="all">All Categories</option>
+                                    {categories.map((cat: any) => (
+                                        <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                                    ))}
                                 </select>
                                 <input
                                     type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Search for products..."
                                     className="w-full bg-white border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 py-3 px-4 transition-all outline-none text-gray-700"
                                 />
-                                <button className="bg-green-600 hover:bg-green-700 text-white px-6 rounded-r-md transition-colors flex items-center justify-center">
+                                <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-6 rounded-r-md transition-colors flex items-center justify-center">
                                     <Search className="h-5 w-5" />
                                 </button>
-                            </div>
+                            </form>
                         </div>
 
                         {/* Actions - Right */}
@@ -99,13 +119,13 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                                     {(auth.user.name || 'U').charAt(0).toUpperCase()}
                                                 </div>
                                                 <span className="max-w-[100px] truncate">{auth.user.name}</span>
-                                                <ChevronDown className="h-4 w-4 text-gray-400" />
+                                                <ChevronDown className="h-4 w-4 opacity-50" />
                                             </button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-56">
-                                            <div className="px-3 py-2 border-b border-gray-100">
-                                                <p className="font-medium text-gray-900">{auth.user.name}</p>
-                                                <p className="text-xs text-gray-500">{auth.user.email}</p>
+                                        <DropdownMenuContent align="end" className="w-56 mt-2">
+                                            <div className="p-3 bg-black rounded-t-md">
+                                                <p className="text-sm font-bold text-white truncate">{auth.user.name}</p>
+                                                <p className="text-xs text-gray-400 truncate">{auth.user.email}</p>
                                             </div>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem asChild>
@@ -114,23 +134,13 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
-                                                <Link href={route('dashboard')} className="flex items-center gap-2 cursor-pointer">
+                                                <Link href={route('account.orders')} className="flex items-center gap-2 cursor-pointer">
                                                     <Package className="h-4 w-4" /> My Orders
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
                                                 <Link href={route('wishlist.index')} className="flex items-center gap-2 cursor-pointer">
                                                     <Heart className="h-4 w-4" /> My Wishlist
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href="#" className="flex items-center gap-2 cursor-pointer">
-                                                    <MapPinIcon className="h-4 w-4" /> My Addresses
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href="#" className="flex items-center gap-2 cursor-pointer">
-                                                    <CreditCard className="h-4 w-4" /> Payment Methods
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
@@ -141,7 +151,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem asChild>
-                                                <Link method="post" href={route('logout')} as="button" className="flex items-center gap-2 cursor-pointer text-red-600 hover:bg-red-50">
+                                                <Link method="post" href={route('logout')} as="button" className="flex items-center gap-2 cursor-pointer text-red-600 hover:bg-red-50 w-full text-left">
                                                     <LogOut className="h-4 w-4" /> Log Out
                                                 </Link>
                                             </DropdownMenuItem>
@@ -177,33 +187,54 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                     </div>
 
                     {/* Mobile Search Bar */}
-                    <div className="mt-4 lg:hidden relative">
+                    <form onSubmit={handleSearch} className="mt-4 lg:hidden relative">
                         <input
                             type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search groceries..."
                             className="w-full bg-white border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 rounded-md py-2.5 px-4 pr-10 transition-all outline-none"
                         />
-                        <Search className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
-                    </div>
+                        <button type="submit" className="absolute right-3 top-3">
+                            <Search className="h-5 w-5 text-gray-400" />
+                        </button>
+                    </form>
                 </div>
             </header>
 
             {/* Category Navigation Bar */}
             <div className="bg-white border-b border-gray-200 hidden lg:block">
                 <div className="container mx-auto px-4 flex items-center gap-8 h-12">
-                    <button className="flex items-center gap-2 bg-green-600 text-white h-full px-6 font-bold hover:bg-green-700 transition-colors">
-                        <Grid className="h-4 w-4" />
-                        Browse Categories
-                        <ChevronDown className="h-4 w-4 ml-2" />
-                    </button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 bg-green-600 text-white h-full px-6 font-bold hover:bg-green-700 transition-colors">
+                                <Grid className="h-4 w-4" />
+                                Browse Categories
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-64 mt-0 rounded-t-none border-t-0 shadow-xl p-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                            {categories.map((cat: any) => (
+                                <DropdownMenuItem key={cat.id} asChild>
+                                    <Link 
+                                        href={route('shop.index', { category: cat.slug })}
+                                        className="flex items-center justify-between gap-2 p-3 rounded-lg hover:bg-green-50 hover:text-green-700 font-medium transition-all group"
+                                    >
+                                        <span>{cat.name}</span>
+                                        <span className="text-xs bg-gray-100 group-hover:bg-green-100 px-2 py-0.5 rounded-full text-gray-500 group-hover:text-green-600 transition-colors">{cat.products_count}</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <nav className="flex-1 flex gap-8 text-sm font-bold text-gray-700">
                         <Link href={route('home')} className="hover:text-green-600 transition-colors">Home</Link>
                         <Link href={route('shop.index')} className="hover:text-green-600 transition-colors">Shop All</Link>
-                        <Link href="#" className="hover:text-red-600 text-red-500 transition-colors flex items-center gap-1">
+                        <Link href={route('shop.index', { offers: 1 })} className="hover:text-red-600 text-red-500 transition-colors flex items-center gap-1">
                             <Percent className="h-4 w-4" /> Offers
                         </Link>
-                        <Link href="#" className="hover:text-green-600 transition-colors">Best Sellers</Link>
-                        <Link href="#" className="hover:text-green-600 transition-colors">Fresh Produce</Link>
+                        <Link href={route('shop.index', { sort: 'popular' })} className="hover:text-green-600 transition-colors">Best Sellers</Link>
+                        <Link href={route('shop.index', { category: 'fresh-produce' })} className="hover:text-green-600 transition-colors">Fresh Produce</Link>
                     </nav>
                 </div>
             </div>
@@ -235,13 +266,21 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                     <Link href={route('shop.index')} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-md hover:text-green-600 border border-transparent hover:border-gray-200">
                                         <ShoppingCart className="h-5 w-5 text-gray-400" /> Shop All
                                     </Link>
-                                    <Link href="#" className="flex items-center gap-3 p-3 hover:bg-red-50 rounded-md text-red-500 border border-transparent hover:border-red-200">
+                                    <Link href={route('shop.index', { offers: 1 })} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-3 hover:bg-red-50 rounded-md text-red-500 border border-transparent hover:border-red-200">
                                         <Percent className="h-5 w-5" /> Offers & Discounts
                                     </Link>
                                     <div className="pt-4 mt-2 border-t border-gray-200">
                                         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-3">Top Categories</p>
-                                        <a href="#" className="block p-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md">Fresh Produce</a>
-                                        <a href="#" className="block p-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md">Meat & Fish</a>
+                                        {categories.slice(0, 8).map((cat: any) => (
+                                            <Link 
+                                                key={cat.id}
+                                                href={route('shop.index', { category: cat.slug })} 
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block p-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md"
+                                            >
+                                                {cat.name}
+                                            </Link>
+                                        ))}
                                     </div>
                                 </nav>
                             </div>
@@ -325,10 +364,19 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
 
                     <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-sm text-gray-500 font-medium">© 2026 FreshKart BD. All rights reserved.</p>
-                        <div className="flex gap-4">
-                            <div className="h-8 w-12 bg-white rounded border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">VISA</div>
-                            <div className="h-8 w-12 bg-white rounded border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">MC</div>
-                            <div className="h-8 w-12 bg-white rounded border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">bKash</div>
+                        <div className="flex flex-wrap gap-3">
+                            <div className="flex items-center gap-2 bg-white rounded border border-gray-100 px-3 py-1.5 shadow-sm hover:border-green-200 transition-colors">
+                                <CreditCard className="h-4 w-4 text-gray-600" />
+                                <span className="text-[10px] font-bold text-gray-600">VISA</span>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white rounded border border-gray-100 px-3 py-1.5 shadow-sm hover:border-green-200 transition-colors">
+                                <CreditCard className="h-4 w-4 text-gray-600" />
+                                <span className="text-[10px] font-bold text-gray-600">Mastercard</span>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white rounded border border-gray-100 px-3 py-1.5 shadow-sm hover:border-green-200 transition-colors">
+                                <Smartphone className="h-4 w-4 text-gray-600" />
+                                <span className="text-[10px] font-bold text-gray-600">bKash</span>
+                            </div>
                         </div>
                     </div>
                 </div>

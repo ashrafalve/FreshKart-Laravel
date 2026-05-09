@@ -1,14 +1,17 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import AdminLayout from '../../../layouts/AdminLayout';
-import { Search, Users, Mail, Phone, ShoppingBag } from 'lucide-react';
+import { Search, Users, Mail, Phone, ShoppingBag, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-interface CustomersIndexProps {
-    customers: any;
-}
+export default function CustomersIndex({ customers, filters = {} }: { customers: any, filters: any }) {
+    const [searchQuery, setSearchQuery] = useState(filters.search || '');
 
-export default function CustomersIndex({ customers }: CustomersIndexProps) {
-    const [searchQuery, setSearchQuery] = useState('');
+    const handleSearch = () => {
+        router.get(route('admin.customers.index'), { search: searchQuery }, {
+            preserveState: true,
+            replace: true
+        });
+    };
 
     return (
         <AdminLayout>
@@ -29,7 +32,8 @@ export default function CustomersIndex({ customers }: CustomersIndexProps) {
                             placeholder="Search by name, email or phone..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-900 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
                         />
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                     </div>
@@ -42,9 +46,9 @@ export default function CustomersIndex({ customers }: CustomersIndexProps) {
                                 <th className="px-6 py-3">Customer</th>
                                 <th className="px-6 py-3">Email</th>
                                 <th className="px-6 py-3">Phone</th>
-                                <th className="px-6 py-3">Orders</th>
                                 <th className="px-6 py-3">Joined</th>
                                 <th className="px-6 py-3">Status</th>
+                                <th className="px-6 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -63,16 +67,28 @@ export default function CustomersIndex({ customers }: CustomersIndexProps) {
                                     </td>
                                     <td className="px-6 py-4 text-gray-600">{customer.email}</td>
                                     <td className="px-6 py-4 text-gray-600">{customer.phone || '-'}</td>
-                                    <td className="px-6 py-4 text-gray-600">{customer.orders?.length || 0}</td>
                                     <td className="px-6 py-4 text-gray-500">{new Date(customer.created_at).toLocaleDateString()}</td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
                                             customer.status === 'active' ? 'bg-green-100 text-green-700' :
                                             customer.status === 'banned' ? 'bg-red-100 text-red-700' :
                                             'bg-gray-100 text-gray-700'
                                         }`}>
                                             {customer.status || 'active'}
                                         </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button 
+                                            onClick={() => {
+                                                if(confirm('Are you sure you want to delete this user?')) {
+                                                    router.delete(route('admin.customers.destroy', customer.id));
+                                                }
+                                            }}
+                                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors" 
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
                                     </td>
                                 </tr>
                             )) : (
@@ -90,7 +106,7 @@ export default function CustomersIndex({ customers }: CustomersIndexProps) {
                 {customers.last_page > 1 && (
                     <div className="p-4 border-t border-gray-200 bg-gray-50 flex items-center justify-center gap-2">
                         {customers.links.map((link: any, i: number) => (
-                            <router
+                            <Link
                                 key={i}
                                 href={link.url || '#'}
                                 className={`px-3 py-1 rounded-md text-sm ${link.active ? 'bg-green-600 text-white font-medium' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
@@ -103,3 +119,4 @@ export default function CustomersIndex({ customers }: CustomersIndexProps) {
         </AdminLayout>
     );
 }
+

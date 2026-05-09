@@ -29,16 +29,8 @@ class ProductService implements ProductServiceInterface
 
     public function getShopPageData(array $filters): array
     {
-        $query = $filters['q'] ?? '';
-        
-        if ($query) {
-            $products = $this->productRepository->search($query);
-        } else {
-            $products = $this->productRepository->getActiveProducts();
-        }
-
         return [
-            'products' => $products,
+            'products' => $this->productRepository->getFilteredProducts($filters),
             'categories' => Category::where('is_active', true)->withCount('products')->get(),
         ];
     }

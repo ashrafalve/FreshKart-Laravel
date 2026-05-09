@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '../../layouts/AdminLayout';
 import { TrendingUp, Users, ShoppingBag, PackageOpen, DollarSign, CheckCircle } from 'lucide-react';
 
@@ -64,7 +64,7 @@ export default function AdminDashboard({ stats }: DashboardProps) {
                 <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
                         <h2 className="font-bold text-gray-900">Recent Orders</h2>
-                        <a href="#" className="text-sm text-green-600 hover:text-green-700 font-medium">View All</a>
+                        <Link href={route('admin.orders.index')} className="text-sm text-green-600 hover:text-green-700 font-medium">View All</Link>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
@@ -139,7 +139,7 @@ export default function AdminDashboard({ stats }: DashboardProps) {
                         )}
                     </div>
                     <div className="p-4 border-t border-gray-100 bg-gray-50 text-center">
-                        <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900">Manage Inventory</a>
+                        <Link href={route('admin.products.index')} className="text-sm font-medium text-gray-600 hover:text-gray-900">Manage Inventory</Link>
                     </div>
                 </div>
             </div>

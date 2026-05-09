@@ -11,6 +11,8 @@ interface ShopProps {
 
 export default function ShopIndex({ products, categories, filters }: ShopProps) {
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+    const [minPrice, setMinPrice] = useState(filters.min_price || '');
+    const [maxPrice, setMaxPrice] = useState(filters.max_price || '');
 
     return (
         <CustomerLayout>
@@ -67,11 +69,26 @@ export default function ShopIndex({ products, categories, filters }: ShopProps) 
                                 <div>
                                     <h3 className="font-bold text-lg mb-4 pb-2 border-b border-gray-100 text-gray-900">Price Range</h3>
                                     <div className="flex items-center gap-2">
-                                        <input type="number" placeholder="Min" className="w-full bg-white border border-gray-300 rounded-md p-2 text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" />
+                                        <input 
+                                            type="number" 
+                                            placeholder="Min" 
+                                            value={minPrice}
+                                            onChange={(e) => setMinPrice(e.target.value)}
+                                            className="w-full bg-white border border-gray-300 rounded-md p-2 text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
+                                        />
                                         <span className="text-gray-400">-</span>
-                                        <input type="number" placeholder="Max" className="w-full bg-white border border-gray-300 rounded-md p-2 text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" />
+                                        <input 
+                                            type="number" 
+                                            placeholder="Max" 
+                                            value={maxPrice}
+                                            onChange={(e) => setMaxPrice(e.target.value)}
+                                            className="w-full bg-white border border-gray-300 rounded-md p-2 text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
+                                        />
                                     </div>
-                                    <button className="w-full mt-4 bg-gray-900 text-white py-2.5 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors">
+                                    <button 
+                                        onClick={() => router.get(route('shop.index'), { ...filters, min_price: minPrice, max_price: maxPrice })}
+                                        className="w-full mt-4 bg-gray-900 text-white py-2.5 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors"
+                                    >
                                         Apply Filters
                                     </button>
                                 </div>
@@ -87,11 +104,14 @@ export default function ShopIndex({ products, categories, filters }: ShopProps) 
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-600 font-medium">Sort by:</span>
-                                    <select className="bg-white border border-gray-300 text-gray-900 font-medium text-sm rounded-md py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none">
+                                    <select 
+                                        value={filters.sort || 'latest'}
+                                        onChange={(e) => router.get(route('shop.index'), { ...filters, sort: e.target.value })}
+                                        className="bg-white border border-gray-300 text-gray-900 font-medium text-sm rounded-md py-2 px-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none"
+                                    >
                                         <option value="latest">Latest Added</option>
                                         <option value="price_low">Price: Low to High</option>
                                         <option value="price_high">Price: High to Low</option>
-                                        <option value="popular">Most Popular</option>
                                     </select>
                                 </div>
                             </div>
