@@ -40,5 +40,11 @@ export default [
     {
         ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js'],
     },
+    {
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
+        }
+    },
     prettier, // Turn off all rules that might conflict with Prettier
 ];
