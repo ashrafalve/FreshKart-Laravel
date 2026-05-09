@@ -39,8 +39,6 @@ export default function Home({
     featured_products = [], 
     trending_products = [] 
 }: HomeProps) {
-    const [currentSlide, setCurrentSlide] = useState(0);
-
     const slides = [
         {
             image: "/images/freshkartbanner0.png",
@@ -58,15 +56,36 @@ export default function Home({
         }
     ];
 
+    const [[page, direction], setPage] = useState([0, 0]);
+    const currentSlide = Math.abs(page % slides.length);
+
     useEffect(() => {
         const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
+            paginate(1);
         }, 5000);
         return () => clearInterval(timer);
-    }, []);
+    }, [page]);
 
-    const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-    const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    const paginate = (newDirection: number) => {
+        setPage([page + newDirection, newDirection]);
+    };
+
+    const slideVariants = {
+        enter: (direction: number) => ({
+            x: direction > 0 ? '100%' : '-100%',
+            opacity: 0
+        }),
+        center: {
+            zIndex: 1,
+            x: 0,
+            opacity: 1
+        },
+        exit: (direction: number) => ({
+            zIndex: 0,
+            x: direction < 0 ? '100%' : '-100%',
+            opacity: 0
+        })
+    };
 
     // Animation variants
     const fadeIn = {
@@ -82,15 +101,6 @@ export default function Home({
         }
     };
 
-    const categoryImages = [
-        "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400",
-        "https://images.unsplash.com/photo-1607006411046-2b47fdbb20f2?auto=format&fit=crop&q=80&w=400",
-        "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&q=80&w=400",
-        "https://images.unsplash.com/photo-1584473457406-6240486418e9?auto=format&fit=crop&q=80&w=400",
-        "https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?auto=format&fit=crop&q=80&w=400",
-        "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400",
-    ];
-
     return (
         <CustomerLayout>
             <Head title="Fresh Groceries Delivered Fast | FreshKart BD" />
@@ -98,14 +108,19 @@ export default function Home({
             {/* Top Slider Section */}
             <section className="bg-white py-6">
                 <div className="container mx-auto px-4">
-                    <div className="relative w-full overflow-hidden bg-gray-100 aspect-[2.5/1] md:aspect-[3/1] rounded-2xl shadow-lg border border-gray-100">
-                        <AnimatePresence mode="wait">
+                    <div className="relative w-full overflow-hidden bg-gray-100 aspect-[2.5/1] md:aspect-[3/1] rounded-md shadow-lg border border-gray-100">
+                        <AnimatePresence initial={false} custom={direction}>
                             <motion.div
-                                key={currentSlide}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.7 }}
+                                key={page}
+                                custom={direction}
+                                variants={slideVariants}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={{
+                                    x: { type: "spring", stiffness: 300, damping: 30 },
+                                    opacity: { duration: 0.2 }
+                                }}
                                 className="absolute inset-0 w-full h-full"
                             >
                                 <img 
@@ -118,13 +133,13 @@ export default function Home({
 
                         {/* Navigation Arrows */}
                         <button 
-                            onClick={prevSlide}
+                            onClick={() => paginate(-1)}
                             className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-white/70 backdrop-blur-md text-gray-900 hover:bg-white hover:text-green-600 shadow-sm transition-all hidden md:block"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <button 
-                            onClick={nextSlide}
+                            onClick={() => paginate(1)}
                             className="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-white/70 backdrop-blur-md text-gray-900 hover:bg-white hover:text-green-600 shadow-sm transition-all hidden md:block"
                         >
                             <ChevronRight className="w-5 h-5" />
@@ -135,7 +150,7 @@ export default function Home({
                             {slides.map((_, idx) => (
                                 <button
                                     key={idx}
-                                    onClick={() => setCurrentSlide(idx)}
+                                    onClick={() => setPage([idx, idx > currentSlide ? 1 : -1])}
                                     className={`h-1.5 transition-all rounded-full ${currentSlide === idx ? 'w-8 bg-green-500' : 'w-2.5 bg-gray-300'}`}
                                 />
                             ))}
@@ -275,7 +290,7 @@ export default function Home({
             {/* Banner Section */}
             <section className="py-12 bg-white">
                 <div className="container mx-auto px-4">
-                    <div className="relative rounded-lg overflow-hidden bg-gray-900 text-white shadow-xl group">
+                    <div className="relative rounded-md overflow-hidden bg-gray-900 text-white shadow-xl group">
                         <div className="absolute inset-0">
                             <img 
                                 src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200" 

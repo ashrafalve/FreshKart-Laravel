@@ -99,7 +99,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Search for products..."
-                                    className="w-full bg-white border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 py-3 px-4 transition-all outline-none text-gray-700"
+                                    className="w-full bg-white border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 py-3 px-4 transition-all outline-none text-gray-900 font-medium"
                                 />
                                 <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-6 rounded-r-md transition-colors flex items-center justify-center">
                                     <Search className="h-5 w-5" />
@@ -193,7 +193,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search groceries..."
-                            className="w-full bg-white border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 rounded-md py-2.5 px-4 pr-10 transition-all outline-none"
+                            className="w-full bg-white border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 rounded-md py-2.5 px-4 pr-10 transition-all outline-none text-gray-900 font-medium"
                         />
                         <button type="submit" className="absolute right-3 top-3">
                             <Search className="h-5 w-5 text-gray-400" />
