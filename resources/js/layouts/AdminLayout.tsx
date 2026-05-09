@@ -18,12 +18,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const navigation = [
-        { name: 'Dashboard', href: route('admin.dashboard'), icon: LayoutDashboard },
-        { name: 'Orders', href: '#', icon: ShoppingCart },
-        { name: 'Products', href: '#', icon: Package },
-        { name: 'Categories', href: '#', icon: Tag },
-        { name: 'Customers', href: '#', icon: Users },
-        { name: 'Settings', href: '#', icon: Settings },
+        { name: 'Dashboard', routeName: 'admin.dashboard', icon: LayoutDashboard },
+        { name: 'Orders', routeName: 'admin.orders.index', icon: ShoppingCart },
+        { name: 'Products', routeName: 'admin.products.*', icon: Package },
+        { name: 'Categories', routeName: 'admin.categories.index', icon: Tag },
+        { name: 'Customers', routeName: 'admin.customers.index', icon: Users },
+        { name: 'Settings', routeName: 'admin.settings.index', icon: Settings },
     ];
 
     return (
@@ -57,15 +57,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <nav className="flex-1 overflow-y-auto py-4">
                     <ul className="space-y-1 px-2">
                         {navigation.map((item) => {
-                            const active = route().current(item.href.replace(window.location.origin + '/', '')); // Simplified active check
-                            const isActive = item.name === 'Dashboard'; // Hardcoded for demo
+                            // Check if current route matches the item's route (handles wildcards)
+                            const isActive = route().current(item.routeName);
+                            // Ensure href resolves correctly even for wildcards (use the base index route)
+                            const targetRoute = item.routeName.replace('.*', '.index');
+                            
                             return (
                                 <li key={item.name}>
                                     <Link
-                                        href={item.href}
+                                        href={route(targetRoute)}
                                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                                             isActive
-                                                ? 'bg-green-600 text-white'
+                                                ? 'bg-green-600 text-white shadow-md'
                                                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                                         }`}
                                     >

@@ -9,6 +9,14 @@ Route::get('/', [ShopController::class, 'home'])->name('home');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/product/{slug}', [ShopController::class, 'show'])->name('shop.product');
 
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 
@@ -26,12 +34,20 @@ Route::prefix('checkout')->group(function () {
 });
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 // Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // In a real app, you would add a middleware here to check if user is admin
-    // ->middleware('role:admin')
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // Products full CRUD
+    Route::resource('products', AdminProductController::class);
+    
+    // Placeholders for other sections
+    Route::get('/orders', function() { return Inertia::render('Admin/Orders/Index'); })->name('orders.index');
+    Route::get('/categories', function() { return Inertia::render('Admin/Categories/Index'); })->name('categories.index');
+    Route::get('/customers', function() { return Inertia::render('Admin/Customers/Index'); })->name('customers.index');
+    Route::get('/settings', function() { return Inertia::render('Admin/Settings/Index'); })->name('settings.index');
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -227,18 +227,18 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                             <ul className="space-y-3 text-sm text-gray-600 font-medium">
                                 <li><Link href={route('home')} className="hover:text-green-600 transition-colors">Home</Link></li>
                                 <li><Link href={route('shop.index')} className="hover:text-green-600 transition-colors">Shop All</Link></li>
-                                <li><a href="#" className="hover:text-green-600 transition-colors">About Us</a></li>
-                                <li><a href="#" className="hover:text-green-600 transition-colors">Contact Us</a></li>
+                                <li><Link href={route('about')} className="hover:text-green-600 transition-colors">About Us</Link></li>
+                                <li><Link href={route('contact')} className="hover:text-green-600 transition-colors">Contact Us</Link></li>
                             </ul>
                         </div>
                         
                         <div>
                             <h3 className="font-bold text-gray-900 mb-6 text-lg">Categories</h3>
                             <ul className="space-y-3 text-sm text-gray-600 font-medium">
-                                <li><a href="#" className="hover:text-green-600 transition-colors">Fresh Vegetables</a></li>
-                                <li><a href="#" className="hover:text-green-600 transition-colors">Meat & Seafood</a></li>
-                                <li><a href="#" className="hover:text-green-600 transition-colors">Dairy & Bakery</a></li>
-                                <li><a href="#" className="hover:text-green-600 transition-colors">Snacks & Beverages</a></li>
+                                <li><Link href={route('shop.index', {category: 'produce'})} className="hover:text-green-600 transition-colors">Fresh Vegetables</Link></li>
+                                <li><Link href={route('shop.index', {category: 'meat-seafood'})} className="hover:text-green-600 transition-colors">Meat & Seafood</Link></li>
+                                <li><Link href={route('shop.index', {category: 'dairy'})} className="hover:text-green-600 transition-colors">Dairy & Bakery</Link></li>
+                                <li><Link href={route('shop.index', {category: 'snacks'})} className="hover:text-green-600 transition-colors">Snacks & Beverages</Link></li>
                             </ul>
                         </div>
                         
